@@ -138,7 +138,7 @@ function App() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f5ee] text-[#211f1b]">
+    <main className="min-h-screen bg-[#edf3f1] text-[#202523]">
       <AppHeader />
       <section className="mx-auto grid max-w-7xl gap-4 px-4 py-5 lg:grid-cols-[360px_1fr]">
         <aside className="space-y-4">

@@ -5,6 +5,8 @@
 
 Local-first toolkit for short-term rental hosts to analyze pricing, optimize calendars, and draft guest-ready content.
 
+![HostFlow Local screenshot](docs/assets/screenshot.png)
+
 Live site: https://baditaflorin.github.io/hostflow-local/
 
 Repository: https://github.com/baditaflorin/hostflow-local
@@ -24,6 +26,14 @@ make pages-preview
 ## Architecture
 
 HostFlow Local is a Mode A GitHub Pages app. The browser owns import parsing, pricing analysis, calendar recommendations, draft generation, and local persistence. Optional local LLM calls use a user-supplied endpoint; no secrets are bundled or stored by the project.
+
+## What v0.1.0 includes
+
+- Paste-HTML and CSV listing import with Zod-validated `hostflow.listings.v1` records.
+- Pricing band, occupancy signal, and 30-day calendar recommendations.
+- Listing copy, guest templates, review responses, competitor ranking, and Pandoc-ready Markdown export.
+- Lazy DuckDB-WASM neighborhood summary and optional local LLM polish through a user-owned endpoint.
+- Version and commit metadata visible in the live GitHub Pages UI.
 
 ```mermaid
 C4Context

@@ -9,8 +9,8 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: #211f1b;
-  background: #f7f5ee;
+  color: #202523;
+  background: #edf3f1;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -65,32 +65,32 @@ select:focus-visible {
 }
 
 .btn-primary {
-  background: #211f1b;
-  color: #fffaf0;
+  background: #173b35;
+  color: #ffffff;
 }
 
 .btn-secondary {
-  border-color: #d8d1c1;
-  background: #fffaf0;
-  color: #211f1b;
+  border-color: #cbd8d4;
+  background: #ffffff;
+  color: #202523;
 }
 
 .surface {
-  border: 1px solid #d8d1c1;
+  border: 1px solid #cbd8d4;
   border-radius: 8px;
-  background: #fffdf7;
-  box-shadow: 0 18px 35px rgba(42, 35, 24, 0.08);
+  background: #ffffff;
+  box-shadow: 0 18px 35px rgba(32, 44, 40, 0.08);
 }
 
 .metric {
-  border: 1px solid #ded7c7;
+  border: 1px solid #cbd8d4;
   border-radius: 8px;
-  background: #f8f1df;
+  background: #f8fbfa;
   padding: 12px;
 }
 
 .metric dt {
-  color: #6a6255;
+  color: #5a6763;
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -98,7 +98,7 @@ select:focus-visible {
 
 .metric dd {
   margin: 4px 0 0;
-  color: #211f1b;
+  color: #202523;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
   font-size: 13px;
   font-weight: 800;
@@ -114,18 +114,18 @@ select:focus-visible {
 .section-title h3,
 .content-panel h3 {
   margin: 0;
-  color: #211f1b;
+  color: #202523;
   font-size: 15px;
   font-weight: 800;
 }
 
 .field {
   width: 100%;
-  border: 1px solid #d8d1c1;
+  border: 1px solid #cbd8d4;
   border-radius: 8px;
-  background: #fffaf0;
+  background: #ffffff;
   padding: 10px 11px;
-  color: #211f1b;
+  color: #202523;
   font-size: 14px;
   line-height: 1.35;
 }
@@ -133,7 +133,7 @@ select:focus-visible {
 .field-label {
   display: grid;
   gap: 6px;
-  color: #5c554a;
+  color: #52625d;
   font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
@@ -143,8 +143,8 @@ select:focus-visible {
   display: flex;
   gap: 2px;
   overflow-x: auto;
-  border-bottom: 1px solid #d8d1c1;
-  background: #f2ead8;
+  border-bottom: 1px solid #cbd8d4;
+  background: #e5eeeb;
   padding: 8px;
 }
 
@@ -157,22 +157,22 @@ select:focus-visible {
   border-radius: 8px;
   background: transparent;
   padding: 9px 11px;
-  color: #5c554a;
+  color: #53635e;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
 }
 
 .tab-button[data-active='true'] {
-  border-color: #d8d1c1;
-  background: #fffdf7;
-  color: #211f1b;
+  border-color: #cbd8d4;
+  background: #ffffff;
+  color: #202523;
 }
 
 .content-panel {
-  border: 1px solid #ded7c7;
+  border: 1px solid #cbd8d4;
   border-radius: 8px;
-  background: #fffaf0;
+  background: #ffffff;
   padding: 14px;
 }
 
@@ -183,9 +183,9 @@ select:focus-visible {
 }
 
 .clean-list li {
-  border-top: 1px solid #e8dfca;
+  border-top: 1px solid #dce5e2;
   padding: 10px 0;
-  color: #4f493e;
+  color: #46524e;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -201,7 +201,7 @@ select:focus-visible {
   justify-content: space-between;
   gap: 12px;
   border-radius: 8px;
-  background: #f7f1e2;
+  background: #eef6f3;
   padding: 9px 10px;
   font-size: 13px;
 }
@@ -219,13 +219,13 @@ table {
 
 th,
 td {
-  border-bottom: 1px solid #e3dac6;
+  border-bottom: 1px solid #dce5e2;
   padding: 11px 10px;
   text-align: left;
 }
 
 th {
-  color: #5c554a;
+  color: #52625d;
   font-size: 12px;
   text-transform: uppercase;
 }

@@ -12,14 +12,7 @@ GitHub Pages serves the `gh-pages` branch root. The main branch builds static fi
 
 ```bash
 npm install
-npm run build
-git worktree add -B gh-pages /tmp/hostflow-local-gh-pages origin/gh-pages
-find /tmp/hostflow-local-gh-pages -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-cp -R dist/. /tmp/hostflow-local-gh-pages/
-touch /tmp/hostflow-local-gh-pages/.nojekyll
-git -C /tmp/hostflow-local-gh-pages add -A
-git -C /tmp/hostflow-local-gh-pages commit -m "ops: publish pages"
-git -C /tmp/hostflow-local-gh-pages push origin gh-pages
+make publish-pages
 ```
 
 ## Rollback
