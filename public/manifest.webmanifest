@@ -1,0 +1,18 @@
+{
+  "name": "HostFlow Local",
+  "short_name": "HostFlow",
+  "description": "Local-first short-term rental host workflow for pricing and guest-ready drafts.",
+  "start_url": "/hostflow-local/",
+  "scope": "/hostflow-local/",
+  "display": "standalone",
+  "background_color": "#f7f5ee",
+  "theme_color": "#0f6b5f",
+  "icons": [
+    {
+      "src": "/hostflow-local/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

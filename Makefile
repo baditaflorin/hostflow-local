@@ -1,4 +1,4 @@
-.PHONY: help install-hooks dev build test test-integration smoke lint fmt pages-preview clean hooks-pre-commit hooks-commit-msg hooks-pre-push hooks-post-merge hooks-post-checkout release
+.PHONY: help install-hooks dev build test test-integration smoke lint fmt pages-preview clean hooks-pre-commit hooks-commit-msg hooks-pre-push hooks-post-merge hooks-post-checkout release publish-pages
 
 help:
 	@printf '%s\n' \
@@ -11,6 +11,7 @@ help:
 		'lint               run eslint, prettier check, and typecheck' \
 		'fmt                autoformat source files' \
 		'pages-preview      serve dist/ exactly as Pages would' \
+		'publish-pages      publish dist/ to the gh-pages branch' \
 		'release            tag the current commit as v$$(node -p "require(\"./package.json\").version")'
 
 install-hooks:
@@ -59,6 +60,9 @@ hooks-post-checkout:
 
 release:
 	git tag v$$(node -p "require('./package.json').version")
+
+publish-pages:
+	bash scripts/publish-pages.sh
 
 clean:
 	rm -rf dist coverage playwright-report test-results

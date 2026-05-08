@@ -103,3 +103,135 @@ select:focus-visible {
   font-size: 13px;
   font-weight: 800;
 }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title h2,
+.section-title h3,
+.content-panel h3 {
+  margin: 0;
+  color: #211f1b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.field {
+  width: 100%;
+  border: 1px solid #d8d1c1;
+  border-radius: 8px;
+  background: #fffaf0;
+  padding: 10px 11px;
+  color: #211f1b;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.field-label {
+  display: grid;
+  gap: 6px;
+  color: #5c554a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tabbar {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  border-bottom: 1px solid #d8d1c1;
+  background: #f2ead8;
+  padding: 8px;
+}
+
+.tab-button {
+  display: inline-flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  padding: 9px 11px;
+  color: #5c554a;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tab-button[data-active='true'] {
+  border-color: #d8d1c1;
+  background: #fffdf7;
+  color: #211f1b;
+}
+
+.content-panel {
+  border: 1px solid #ded7c7;
+  border-radius: 8px;
+  background: #fffaf0;
+  padding: 14px;
+}
+
+.clean-list {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clean-list li {
+  border-top: 1px solid #e8dfca;
+  padding: 10px 0;
+  color: #4f493e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.clean-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.mini-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 8px;
+  background: #f7f1e2;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e3dac6;
+  padding: 11px 10px;
+  text-align: left;
+}
+
+th {
+  color: #5c554a;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+td:nth-child(2),
+td:nth-child(3) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-weight: 800;
+}

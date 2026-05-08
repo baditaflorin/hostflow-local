@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v npm >/dev/null 2>&1 && [ -f package-lock.json ]; then
+  npm install
+fi
