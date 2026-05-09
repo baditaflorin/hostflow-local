@@ -1,7 +1,7 @@
 {
   "name": "hostflow-local",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local-first toolkit for short-term rental hosts to analyze pricing, optimize calendars, and draft guest-ready content.",
   "type": "module",
   "scripts": {
@@ -20,7 +20,6 @@
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.33.1-dev45.0",
     "@tanstack/react-query": "^5.100.9",
-    "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

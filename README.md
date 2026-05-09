@@ -27,13 +27,20 @@ make pages-preview
 
 HostFlow Local is a Mode A GitHub Pages app. The browser owns import parsing, pricing analysis, calendar recommendations, draft generation, and local persistence. Optional local LLM calls use a user-supplied endpoint; no secrets are bundled or stored by the project.
 
-## What v0.1.0 includes
+## What v0.2.0 includes
 
-- Paste-HTML and CSV listing import with Zod-validated `hostflow.listings.v1` records.
+- Paste, upload, drag-drop, clipboard, URL, and workspace-JSON import paths for host data.
 - Pricing band, occupancy signal, and 30-day calendar recommendations.
-- Listing copy, guest templates, review responses, competitor ranking, and Pandoc-ready Markdown export.
-- Lazy DuckDB-WASM neighborhood summary and optional local LLM polish through a user-owned endpoint.
-- Version and commit metadata visible in the live GitHub Pages UI.
+- Listing copy, guest templates, review responses, competitor ranking, and one-click copy actions.
+- Markdown, CSV, JSON, workspace-save, print, and share-link export paths.
+- Lazy DuckDB-WASM neighborhood summary, optional local LLM polish through a user-owned endpoint, and version/commit metadata visible in the live UI.
+
+## Workspace flow
+
+- Upload a CSV, paste HTML, drop files, or read from the clipboard.
+- Review import intelligence before committing the market set.
+- Save the full workspace as JSON or copy a small share link.
+- Export the final report as Markdown, CSV, JSON, or browser-print output.
 
 ```mermaid
 C4Context

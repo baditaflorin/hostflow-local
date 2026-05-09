@@ -4,13 +4,16 @@ import type { CalendarRecommendation } from '../analysis/calendar'
 import type { CompetitorInsight } from '../analysis/competitors'
 import type { PricingAnalysis } from '../analysis/pricing'
 import type { DraftBundle } from '../drafts/drafts'
-import type { ImportResult } from '../import/importTypes'
+import type { ImportResult, InferredListing } from '../import/importTypes'
 import { listingSchemaVersion, type Listing, type SubjectListing } from '../import/listingSchema'
 import type { ActivityEvent } from '../../lib/activity'
 
+type ReportListing = Listing &
+  Partial<Pick<InferredListing, 'confidence' | 'currency' | 'priceTotal' | 'fieldReasons'>>
+
 export function createMarkdownReport(input: {
   subject: SubjectListing
-  listings: Listing[]
+  listings: ReportListing[]
   pricing: PricingAnalysis
   calendar: CalendarRecommendation[]
   competitors: CompetitorInsight[]
@@ -129,20 +132,20 @@ export function createMarkdownReport(input: {
   ].join('\n')
 }
 
-function hasConfidence(listing: Listing): listing is Listing & { confidence: number } {
-  return typeof (listing as Listing & { confidence?: unknown }).confidence === 'number'
+function hasConfidence(listing: ReportListing): listing is ReportListing & { confidence: number } {
+  return typeof listing.confidence === 'number'
 }
 
-function hasCurrency(listing: Listing): listing is Listing & { currency: string } {
-  return typeof (listing as Listing & { currency?: unknown }).currency === 'string'
+function hasCurrency(listing: ReportListing): listing is ReportListing & { currency: string } {
+  return typeof listing.currency === 'string'
 }
 
-function hasPriceTotal(listing: Listing): listing is Listing & { priceTotal: number } {
-  return typeof (listing as Listing & { priceTotal?: unknown }).priceTotal === 'number'
+function hasPriceTotal(listing: ReportListing): listing is ReportListing & { priceTotal: number } {
+  return typeof listing.priceTotal === 'number'
 }
 
 function hasFieldReasons(
-  listing: Listing,
-): listing is Listing & { fieldReasons: Record<string, string> } {
-  return typeof (listing as Listing & { fieldReasons?: unknown }).fieldReasons === 'object'
+  listing: ReportListing,
+): listing is ReportListing & { fieldReasons: Record<string, string> } {
+  return typeof listing.fieldReasons === 'object' && listing.fieldReasons !== null
 }

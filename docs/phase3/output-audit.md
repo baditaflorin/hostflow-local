@@ -5,33 +5,27 @@ Audit date: 2026-05-09
 Status key:
 
 - `green`: works fully on real user output
-- `yellow`: works partially or only with manual effort
-- `red`: expected but not built
 
-| Output pathway                        | Status | Current behavior                                                                                 | Gap to close                                                                 |
-| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Markdown download                     | green  | Export tab downloads a Pandoc-ready Markdown report with version, commit, and import provenance. | Add state provenance and a smoother next-step path.                          |
-| Read-only on-screen report            | green  | Full report is visible in-app before download.                                                   | Add copy and print affordances.                                              |
-| Copy export to clipboard              | red    | No copy button exists for the report or any generated template.                                  | Add one-click clipboard copy with confirmation.                              |
-| Save full workspace state             | red    | Not built.                                                                                       | Add downloadable state file with schema version and import metadata.         |
-| Load saved workspace state            | red    | Not built.                                                                                       | Pair with state export to create round-trip continuity.                      |
-| Shareable link                        | red    | Not built.                                                                                       | Add hash-based share URL for small workspaces.                               |
-| JSON export                           | red    | Not built.                                                                                       | Add structured export for automation and re-import.                          |
-| CSV export                            | red    | Not built.                                                                                       | Add comparable-data CSV export for downstream spreadsheet use.               |
-| Print/PDF-friendly output             | yellow | User can download Markdown and convert with Pandoc manually outside the app.                     | Add print view and browser-print path.                                       |
-| Copy guest templates individually     | red    | Not built.                                                                                       | Add copy actions per text block.                                             |
-| Copy review responses individually    | red    | Not built.                                                                                       | Add copy actions per text block.                                             |
-| Copy listing copy blocks individually | red    | Not built.                                                                                       | Add copy actions per text block.                                             |
-| API/curl-ready output                 | red    | Not built.                                                                                       | Add JSON export and documented schema instead of pretending there is an API. |
+| Output pathway                        | Status | Current behavior                                                                                 | Gap to close                                     |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| Markdown download                     | green  | Export tab downloads a Pandoc-ready Markdown report with version, commit, and import provenance. | None in Phase 3 scope.                           |
+| Read-only on-screen report            | green  | Full report is visible in-app before download.                                                   | None in Phase 3 scope.                           |
+| Copy export to clipboard              | green  | Markdown report can be copied in one click.                                                      | None in Phase 3 scope.                           |
+| Save full workspace state             | green  | Workspace JSON export includes versioned schema and provenance.                                  | None in Phase 3 scope.                           |
+| Load saved workspace state            | green  | Workspace JSON is accepted through the same upload path.                                         | None in Phase 3 scope.                           |
+| Shareable link                        | green  | Small workspaces can be copied as URL hash links.                                                | Very large states still use JSON export instead. |
+| JSON export                           | green  | Comparable listings export as JSON for automation-friendly use.                                  | None in Phase 3 scope.                           |
+| CSV export                            | green  | Comparable listings export as CSV for spreadsheet workflows.                                     | None in Phase 3 scope.                           |
+| Print/PDF-friendly output             | green  | Print action opens a browser-printable report view.                                              | None in Phase 3 scope.                           |
+| Copy guest templates individually     | green  | Each template block has a copy action.                                                           | None in Phase 3 scope.                           |
+| Copy review responses individually    | green  | Each review response block has a copy action.                                                    | None in Phase 3 scope.                           |
+| Copy listing copy blocks individually | green  | Title options, summary, bullets, and LLM output all have copy actions.                           | None in Phase 3 scope.                           |
+| API/automation-ready output           | green  | JSON export fills the automation-ready role honestly without pretending there is a runtime API.  | None in Phase 3 scope.                           |
 
 Summary:
 
-- Green: 2
-- Yellow: 1
-- Red: 10
+- Green: 13
 
-Highest-impact gaps:
+Highest-impact remaining limitation:
 
-1. The app can produce work, but it cannot package the full workspace for later reuse.
-2. Common copy-to-clipboard actions are missing, forcing manual selection.
-3. Structured exports are absent, so the tool is weak in real workflows after the first report.
+1. Share links have a practical size ceiling, so workspace JSON remains the fallback for larger states.

@@ -87,6 +87,7 @@ const storageKeys = {
   tab: 'hostflow-local:tab',
   llmEndpoint: 'hostflow-local:llm-endpoint',
   llmModel: 'hostflow-local:llm-model',
+  llmDraft: 'hostflow-local:llm-draft',
   activity: 'hostflow-local:activity',
   importText: 'hostflow-local:import-text',
   preferences: 'hostflow-local:preferences',
@@ -118,7 +119,7 @@ function App() {
     'http://localhost:11434/api/generate',
   )
   const [llmModel, setLlmModel] = useLocalState(storageKeys.llmModel, 'llama3.2')
-  const [llmDraft, setLlmDraft] = useState('')
+  const [llmDraft, setLlmDraft] = useLocalState(storageKeys.llmDraft, '')
   const [llmStatus, setLlmStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [preferences, setPreferences] = useLocalState<WorkspacePreferences>(
     storageKeys.preferences,
@@ -289,6 +290,7 @@ function App() {
       setListings,
       setLlmEndpoint,
       setLlmModel,
+      setLlmDraft,
       setPreferences,
       setSubject,
     ],

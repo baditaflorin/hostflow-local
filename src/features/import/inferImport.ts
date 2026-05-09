@@ -6,7 +6,7 @@ import type {
   InputShape,
   MarketCalendarRow,
 } from './importTypes'
-import { listingSchema } from './listingSchema'
+import { inferredListingSchema } from './importTypes'
 import { cell, mapHeaders } from './fieldMap'
 import { normalizeInput, stableHash } from './normalizeInput'
 import { classifyInput, detectPlatform } from './shapeClassifier'
@@ -260,8 +260,8 @@ function parseHtmlCards(text: string, shape: InputShape) {
   const elements = cards.length ? cards : [document.body].filter(Boolean)
   const listings = elements
     .map((element, index) => listingFromHtml(element, index, shape))
-    .filter(Boolean)
-  return { listings: listings as InferredListing[], issues: [], anomalies: [] }
+    .filter((listing): listing is InferredListing => listing !== null)
+  return { listings, issues: [], anomalies: [] }
 }
 
 function listingFromHtml(element: HTMLElement, index: number, shape: InputShape) {
@@ -352,8 +352,8 @@ function completeListing(input: PartialListing): InferredListing | null {
     confidence: Math.round(confidence * 100) / 100,
   }
 
-  const parsed = listingSchema.safeParse(candidate)
-  return parsed.success ? (candidate as InferredListing) : null
+  const parsed = inferredListingSchema.safeParse(candidate)
+  return parsed.success ? parsed.data : null
 }
 
 function marketRowFromCsv(row: string[], fields: Map<string, number>): MarketCalendarRow {

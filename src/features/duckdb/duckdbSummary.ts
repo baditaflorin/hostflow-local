@@ -44,7 +44,7 @@ export async function runDuckDbSummary(listings: Listing[]): Promise<DuckDbSumma
       ORDER BY average_rate DESC
     `)
     await connection.close()
-    return result.toArray().map((row) => normalizeDuckRow(row as DuckDbRow))
+    return result.toArray().map((row) => normalizeDuckRow(row))
   } finally {
     await database.terminate()
     worker.terminate()
@@ -52,11 +52,16 @@ export async function runDuckDbSummary(listings: Listing[]): Promise<DuckDbSumma
   }
 }
 
-function normalizeDuckRow(row: DuckDbRow): DuckDbSummary {
+function normalizeDuckRow(row: unknown): DuckDbSummary {
+  const record = isDuckDbRow(row) ? row : {}
   return {
-    neighborhood: row.neighborhood ?? 'Unknown',
-    listings: Number(row.listings ?? 0),
-    averageRate: Math.round(row.average_rate ?? 0),
-    averageRating: Math.round((row.average_rating ?? 0) * 100) / 100,
+    neighborhood: record.neighborhood ?? 'Unknown',
+    listings: Number(record.listings ?? 0),
+    averageRate: Math.round(record.average_rate ?? 0),
+    averageRating: Math.round((record.average_rating ?? 0) * 100) / 100,
   }
+}
+
+function isDuckDbRow(value: unknown): value is DuckDbRow {
+  return typeof value === 'object' && value !== null
 }

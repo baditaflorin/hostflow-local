@@ -1,25 +1,44 @@
+import { z } from 'zod'
 import type { Listing } from './listingSchema'
 
-export type InputShape =
-  | 'competitor_listings'
-  | 'ota_cards'
-  | 'reservation_history'
-  | 'market_benchmark'
-  | 'market_calendar'
-  | 'challenge_page'
-  | 'json_ld'
-  | 'empty'
-  | 'unknown'
+export const inputShapeSchema = z.enum([
+  'competitor_listings',
+  'ota_cards',
+  'reservation_history',
+  'market_benchmark',
+  'market_calendar',
+  'challenge_page',
+  'json_ld',
+  'empty',
+  'unknown',
+])
 
-export type ImportStatus =
-  | 'loaded-empty'
-  | 'loaded-some'
-  | 'loaded-many'
-  | 'loaded-partial'
-  | 'recoverable-error'
-  | 'fatal-error'
+export type InputShape = z.infer<typeof inputShapeSchema>
 
-export type IssueSeverity = 'info' | 'warning' | 'recoverable-error' | 'fatal-error'
+export const importStatusSchema = z.enum([
+  'loaded-empty',
+  'loaded-some',
+  'loaded-many',
+  'loaded-partial',
+  'recoverable-error',
+  'fatal-error',
+])
+
+export type ImportStatus = z.infer<typeof importStatusSchema>
+
+export const issueSeveritySchema = z.enum(['info', 'warning', 'recoverable-error', 'fatal-error'])
+
+export type IssueSeverity = z.infer<typeof issueSeveritySchema>
+
+export const importIssueSchema = z.object({
+  code: z.string(),
+  severity: issueSeveritySchema,
+  what: z.string(),
+  why: z.string(),
+  nowWhat: z.string(),
+  row: z.number().optional(),
+  field: z.string().optional(),
+})
 
 export type ImportIssue = {
   code: string
@@ -49,6 +68,36 @@ export type InferredListing = Listing & {
   fieldReasons: Record<string, string>
   issues: ImportIssue[]
 }
+
+export const inferredListingSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  location: z.string(),
+  neighborhood: z.string(),
+  url: z.string().optional(),
+  priceNightly: z.number().nonnegative(),
+  cleaningFee: z.number().nonnegative(),
+  bedrooms: z.number().nonnegative(),
+  bathrooms: z.number().nonnegative(),
+  guests: z.number().positive(),
+  rating: z.number().min(0).max(5),
+  reviewCount: z.number().nonnegative(),
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  amenities: z.array(z.string()),
+  minNights: z.number().positive(),
+  occupancyHint: z.number().min(0).max(1),
+  source: z.enum(['sample', 'html', 'csv', 'manual']),
+  stableId: z.string(),
+  sourceShape: inputShapeSchema,
+  platform: z.string().optional(),
+  currency: z.string().optional(),
+  priceTotal: z.number().optional(),
+  confidence: z.number(),
+  fieldConfidence: z.record(z.string(), z.number()),
+  fieldReasons: z.record(z.string(), z.string()),
+  issues: z.array(importIssueSchema),
+})
 
 export type MarketCalendarRow = {
   date: string

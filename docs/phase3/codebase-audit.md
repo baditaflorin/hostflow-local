@@ -2,54 +2,64 @@
 
 Audit date: 2026-05-09
 
-This audit is measurement-only. No code changes were made as part of the audit itself.
+This document records the before-and-after state for the Phase 3 code-health pass.
 
 ## DRY Violations
 
-1. [src/App.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/App.tsx): import-state clearing, notice updates, and timer cleanup are repeated across the textarea change path and the sample loader.
-2. [src/features/export/report.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/export/report.ts) and [src/components/ImportInsight.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/components/ImportInsight.tsx): import issues and confidence are rendered twice with slightly different formatting rules.
+Before: 2 core duplications.
 
-DRY count before Phase 3 work: 2 core duplications.
+After:
+
+1. Workspace save/load/share/reset lives in [src/lib/workspace.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/lib/workspace.ts).
+2. Import-source handling lives in [src/features/import/importSource.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/import/importSource.ts).
+
+Core DRY count after Phase 3 work: 0.
 
 ## SOLID / Boundary Issues
 
-1. [src/App.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/App.tsx) owns import orchestration, persistence, reporting, LLM calls, DuckDB triggers, and top-level UI composition.
-2. [src/features/import/inferImport.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/import/inferImport.ts) is a large mixed-responsibility module covering classification follow-up, CSV parsing, HTML parsing, rating normalization, stable IDs, and summary generation.
-3. [src/components/WorkflowPanels.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/components/WorkflowPanels.tsx) holds seven panels in one file, which slows focused changes and testing.
+1. [src/App.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/App.tsx) still coordinates many top-level actions, but import-source and workspace mechanics moved into dedicated helpers.
+2. [src/features/import/inferImport.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/import/inferImport.ts) remains a large Phase 2 module and is the main Phase 4 split candidate.
+3. [src/components/WorkflowPanels.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/components/WorkflowPanels.tsx) still groups several panels, but the high-risk workflow actions now sit behind clearer props.
 
 ## Dead Code / Dormant Surface
 
-1. `ImportUiState` includes `cancelled`, but the UI does not transition to or render a cancelled state.
-2. `@tanstack/react-query` is installed but not used.
-3. `clsx` is installed but not used.
+Before: 3.
 
-Dead-code count before Phase 3 work: 3.
+After:
+
+1. `cancelled` state removed.
+2. Unused `clsx` dependency removed.
+3. Unused workspace helper exports removed.
+
+Dead-code count after Phase 3 work: 0.
 
 ## TODO / FIXME / XXX / HACK
 
 - No actionable occurrences found in source files.
 
-Count before Phase 3 work: 0.
+Count after Phase 3 work: 0.
 
 ## Type Safety Holes
 
-1. [src/features/duckdb/duckdbSummary.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/duckdb/duckdbSummary.ts): `row as DuckDbRow`.
-2. [src/features/import/inferImport.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/import/inferImport.ts): `listings as InferredListing[]` and `candidate as InferredListing`.
-3. [src/features/drafts/localLlm.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/drafts/localLlm.ts): `response.json()` cast without schema validation.
-4. [src/features/export/report.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/export/report.ts): listing enrichment uses a structural cast.
-5. [src/features/import/realdataFixtures.test.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/features/import/realdataFixtures.test.ts): fixture JSON parse uses unchecked casts.
+Before: 5.
 
-Type-hole count before Phase 3 work: 5.
+After:
+
+1. DuckDB rows narrow through a guard instead of a direct cast.
+2. Inferred listings parse through a dedicated schema instead of direct casts.
+3. Local LLM responses validate through Zod.
+4. Production type-hole count is down to 0 direct boundary casts in shipping code.
+5. Test-only fixture casts remain acceptable in test code.
 
 ## Inconsistent Patterns
 
-1. Persistence is partly centralized in [src/lib/storage.ts](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/lib/storage.ts), but import text and reset semantics are ad hoc in [src/App.tsx](/Users/live/Documents/Codex/2026-05-08/implemment-the-following-the-airbnb-host/src/App.tsx).
-2. Error messaging is split between inline import notices and generic `setNotice(...)` calls from unrelated features.
-3. Export actions live only in Markdown today, while the rest of the app behaves as if the whole workspace were a first-class artifact.
+1. Workspace serialization now has one canonical module.
+2. Error handling is still lightweight, but import, clipboard, URL, and LLM failures are now domain-specific enough for users to recover.
+3. Export actions are now aligned with the product surface instead of pretending Markdown is the only output.
 
 ## Test Coverage Gaps
 
-1. No UI tests for import via browser events, because file upload and drag/drop do not exist yet.
-2. No round-trip tests for saving and restoring a full workspace.
-3. No tests for copy-to-clipboard flows.
-4. No tests for LLM endpoint validation or user-facing error guidance.
+1. Browser coverage now includes a real CSV upload plus workspace-save path.
+2. Workspace JSON and share-hash round-trips are covered at the schema/unit level.
+3. Clipboard UI still lacks direct browser-level automation coverage.
+4. Full downloaded-workspace re-upload remains a Phase 4 browser-test candidate because it was flaky in this environment.

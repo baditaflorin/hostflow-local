@@ -1,12 +1,7 @@
 import { z } from 'zod'
 import { activityEventSchema, type ActivityEvent } from './activity'
 import { buildInfo } from './build'
-import {
-  subjectListingSchema,
-  listingSchema,
-  type Listing,
-  type SubjectListing,
-} from '../features/import/listingSchema'
+import { subjectListingSchema, listingSchema } from '../features/import/listingSchema'
 
 export const workspaceSchemaVersion = 'hostflow.workspace.v1'
 
@@ -123,20 +118,6 @@ export function workspaceForShare(workspace: WorkspaceSnapshot) {
   }
 }
 
-export function mergeWorkspaceImport(current: WorkspaceSnapshot, next: Partial<WorkspaceSnapshot>) {
-  return workspaceSnapshotSchema.parse({
-    listings: next.listings ?? current.listings,
-    subject: next.subject ?? current.subject,
-    activeTab: next.activeTab ?? current.activeTab,
-    llmEndpoint: next.llmEndpoint ?? current.llmEndpoint,
-    llmModel: next.llmModel ?? current.llmModel,
-    llmDraft: next.llmDraft ?? current.llmDraft,
-    importText: next.importText ?? current.importText,
-    activity: next.activity ?? current.activity,
-    preferences: next.preferences ?? current.preferences,
-  })
-}
-
 export function createResetActivity(): ActivityEvent {
   return {
     id: `${Date.now()}-reset`,
@@ -144,12 +125,4 @@ export function createResetActivity(): ActivityEvent {
     type: 'reset',
     summary: 'Cleared the local workspace',
   }
-}
-
-export function isListingArray(value: unknown): value is Listing[] {
-  return z.array(listingSchema).safeParse(value).success
-}
-
-export function isSubjectListing(value: unknown): value is SubjectListing {
-  return subjectListingSchema.safeParse(value).success
 }
