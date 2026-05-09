@@ -56,14 +56,15 @@ export function inferPrice(text: string): {
     const rawAmount = match[2] ?? match[3] ?? ''
     const rawCurrency = match[1] ?? match[4] ?? ''
     const start = match.index ?? 0
-    const context = text.slice(
-      Math.max(0, start - 36),
-      Math.min(text.length, start + match[0].length + 48),
-    )
+    const end = start + match[0].length
+    const before = text.slice(Math.max(0, start - 24), start)
+    const after = text.slice(end, Math.min(text.length, end + 36))
     return {
       amount: parseNumber(rawAmount),
       currency: currencyBySymbol[rawCurrency] ?? rawCurrency.toUpperCase(),
-      context,
+      context: `${before}${match[0]}${after}`,
+      near: `${before}${after}`,
+      after,
     }
   })
 
@@ -77,13 +78,14 @@ export function inferPrice(text: string): {
       }
     : undefined
 
-  const nightlyCandidate = candidates.find((candidate) =>
-    /per\s+night|\/\s*night|nightly|\bnight\b/i.test(
-      candidate.context.replace(/for\s+\d+\s+nights?/i, ''),
-    ),
+  const nightlyCandidate = candidates.find(
+    (candidate) =>
+      /per\s+night|\/\s*night|nightly|\bnight\b/i.test(
+        candidate.after.replace(/for\s+\d+\s+nights?/i, ''),
+      ) && !/total/i.test(candidate.after.slice(0, 18)),
   )
   const totalCandidate = candidates.find((candidate) =>
-    /total|for\s+\d+\s+nights?/i.test(candidate.context),
+    /total|for\s+\d+\s+nights?/i.test(candidate.near),
   )
   const first = candidates[0]
 
@@ -208,6 +210,16 @@ export function inferRating(text: string) {
         'Booking-style scores use a 10-point scale.',
         'Compare with Airbnb/Vrbo ratings as an approximate 5-point score.',
       ),
+    }
+  }
+
+  const decimalRating = text.match(/\b([0-5][.,]\d{1,2})\b/)
+  if (decimalRating) {
+    return {
+      value: parseNumber(decimalRating[1]),
+      confidence: 0.82,
+      reason: 'Detected 5-point decimal rating from card text.',
+      source: 'rating-pattern',
     }
   }
 

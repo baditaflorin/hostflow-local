@@ -156,7 +156,7 @@ function listingFromCsv(
     cell(row, fields, 'title') ||
     cell(row, fields, 'id') ||
     `${titleCase(shape.replace(/_/g, ' '))} ${index + 1}`
-  const title = titleCase(rawTitle)
+  const title = preserveHostAcronyms(titleCase(rawTitle))
   set(
     'title',
     fields.has('title') ? 0.88 : 0.48,
@@ -166,7 +166,8 @@ function listingFromCsv(
   const rawNightly = cell(row, fields, 'priceNightly')
   const rawTotal = cell(row, fields, 'priceTotal')
   const dateNights = nightsFromDates(cell(row, fields, 'checkin'), cell(row, fields, 'checkout'))
-  const nights = parseNumber(cell(row, fields, 'nights')) || dateNights
+  const rawNights = cell(row, fields, 'nights')
+  const nights = parseNumber(rawNights) || dateNights
   const priceTotal = parseNumber(rawTotal)
   const priceNightly = rawNightly
     ? parseNumber(rawNightly)
@@ -177,7 +178,7 @@ function listingFromCsv(
   if (rawTotal && nights && !rawNightly) {
     issues.push(
       issue(
-        dateNights ? 'adr_derived_from_total_and_dates' : 'adr_derived_from_total_and_nights',
+        rawNights ? 'adr_derived_from_total_and_nights' : 'adr_derived_from_total_and_dates',
         'info',
         'Nightly rate was derived from reservation total.',
         'The export had total revenue and stay length instead of nightly ADR.',
@@ -399,11 +400,12 @@ function overallConfidence(
   const rowConfidence = rowValues.length
     ? rowValues.reduce((sum, value) => sum + value, 0) / rowValues.length
     : shapeConfidence
-  const penalty = issues.reduce(
-    (sum, item) =>
-      sum + (item.severity === 'warning' ? 0.06 : item.severity.includes('error') ? 0.18 : 0),
-    0,
-  )
+  const penalty = issues.reduce((sum, item) => {
+    if (item.severity === 'warning') return sum + 0.06
+    if (item.severity === 'fatal-error') return sum + 0.18
+    if (item.severity === 'recoverable-error') return sum + 0.03
+    return sum
+  }, 0)
   return Math.max(
     0,
     Math.min(1, Math.round((shapeConfidence * 0.35 + rowConfidence * 0.65 - penalty) * 100) / 100),
@@ -467,4 +469,8 @@ function parseHostDate(value: string) {
 
 function collapseText(text: string) {
   return text.replace(/\s+/g, ' ').trim()
+}
+
+function preserveHostAcronyms(title: string) {
+  return title.replace(/\b(\d+)\s*br\b/gi, '$1BR')
 }

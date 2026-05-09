@@ -56,7 +56,7 @@ export function classifyInput(text: string): ShapeClassification {
   }
 
   if (/<[a-z][\s\S]*>/i.test(trimmed)) {
-    return { shape: 'ota_cards', platform: detectPlatform(trimmed), confidence: 0.76, issues: [] }
+    return { shape: 'ota_cards', platform: detectPlatform(trimmed), confidence: 0.8, issues: [] }
   }
 
   return {

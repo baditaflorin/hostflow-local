@@ -44,11 +44,13 @@ export function mapHeaders(headers: string[]) {
     if (index >= 0) {
       result.set(field, index)
       reasons.set(field, `Mapped "${headers[index]}" to ${field}.`)
-      return
     }
+  })
 
+  Object.entries(normalizedSynonyms).forEach(([field, keys]) => {
+    if (result.has(field)) return
     const fuzzyIndex = normalized.findIndex((header) =>
-      keys.some((key) => header.includes(key) || key.includes(header)),
+      keys.some((key) => shouldFuzzyMatch(field, header, key)),
     )
     if (fuzzyIndex >= 0) {
       result.set(field, fuzzyIndex)
@@ -57,6 +59,12 @@ export function mapHeaders(headers: string[]) {
   })
 
   return { fields: result, reasons, normalizedHeaders: normalized }
+}
+
+function shouldFuzzyMatch(field: string, header: string, key: string) {
+  if (key.length < 5 || header.length < 4) return false
+  if (field === 'priceNightly' && /total|annual|monthly/.test(header)) return false
+  return header.includes(key) || key.includes(header)
 }
 
 export function cell(row: string[], fields: Map<string, number>, name: string) {
