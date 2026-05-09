@@ -114,19 +114,13 @@ export function createMarkdownReport(input: {
     '| Listing | Confidence | Currency | Price total | Field notes |',
     '| --- | ---: | --- | ---: | --- |',
     ...listings.map((listing) => {
-      const inferred = listing as Listing & {
-        confidence?: number
-        currency?: string
-        priceTotal?: number
-        fieldReasons?: Record<string, string>
-      }
-      const notes = inferred.fieldReasons
-        ? Object.entries(inferred.fieldReasons)
+      const notes = hasFieldReasons(listing)
+        ? Object.entries(listing.fieldReasons)
             .slice(0, 4)
             .map(([field, reason]) => `${field}: ${reason}`)
             .join('; ')
         : 'sample listing'
-      return `| ${listing.title} | ${percent(inferred.confidence ?? 1)} | ${inferred.currency ?? 'n/a'} | ${inferred.priceTotal ? currency(inferred.priceTotal) : 'n/a'} | ${notes} |`
+      return `| ${listing.title} | ${percent(hasConfidence(listing) ? listing.confidence : 1)} | ${hasCurrency(listing) ? listing.currency : 'n/a'} | ${hasPriceTotal(listing) ? currency(listing.priceTotal) : 'n/a'} | ${notes} |`
     }),
     '',
     '## Activity',
@@ -135,12 +129,20 @@ export function createMarkdownReport(input: {
   ].join('\n')
 }
 
-export function downloadMarkdown(filename: string, markdown: string) {
-  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.click()
-  URL.revokeObjectURL(url)
+function hasConfidence(listing: Listing): listing is Listing & { confidence: number } {
+  return typeof (listing as Listing & { confidence?: unknown }).confidence === 'number'
+}
+
+function hasCurrency(listing: Listing): listing is Listing & { currency: string } {
+  return typeof (listing as Listing & { currency?: unknown }).currency === 'string'
+}
+
+function hasPriceTotal(listing: Listing): listing is Listing & { priceTotal: number } {
+  return typeof (listing as Listing & { priceTotal?: unknown }).priceTotal === 'number'
+}
+
+function hasFieldReasons(
+  listing: Listing,
+): listing is Listing & { fieldReasons: Record<string, string> } {
+  return typeof (listing as Listing & { fieldReasons?: unknown }).fieldReasons === 'object'
 }

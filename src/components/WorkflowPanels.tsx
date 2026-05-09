@@ -1,4 +1,4 @@
-import { Database, Sparkles } from 'lucide-react'
+import { Copy, Database, Download, Printer, Share2, Sparkles } from 'lucide-react'
 import { optimizeCalendar } from '../features/analysis/calendar'
 import { rankCompetitors } from '../features/analysis/competitors'
 import { analyzePricing } from '../features/analysis/pricing'
@@ -90,37 +90,55 @@ export function CalendarPanel({ calendar }: { calendar: ReturnType<typeof optimi
 
 export function CopyPanel({
   drafts,
-  llmEndpoint,
-  llmModel,
   llmDraft,
   llmStatus,
-  onEndpointChange,
-  onModelChange,
   onGenerate,
+  onCopy,
 }: {
   drafts: ReturnType<typeof generateDrafts>
-  llmEndpoint: string
-  llmModel: string
   llmDraft: string
   llmStatus: 'idle' | 'loading' | 'ready' | 'error'
-  onEndpointChange: (value: string) => void
-  onModelChange: (value: string) => void
   onGenerate: () => void
+  onCopy: (label: string, value: string) => void
 }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
       <div className="space-y-4">
         <div className="content-panel">
-          <h3>Title Options</h3>
+          <div className="flex items-center justify-between gap-3">
+            <h3>Title Options</h3>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => onCopy('Title options', drafts.listingTitleOptions.join('\n'))}
+            >
+              <Copy size={16} aria-hidden="true" />
+              Copy
+            </button>
+          </div>
           <ul className="clean-list">
             {drafts.listingTitleOptions.map((title) => (
               <li key={title}>{title}</li>
             ))}
           </ul>
         </div>
-        <TextBlock title="Listing Summary" body={drafts.listingSummary} />
+        <TextBlock
+          title="Listing Summary"
+          body={drafts.listingSummary}
+          onCopy={() => onCopy('Listing summary', drafts.listingSummary)}
+        />
         <div className="content-panel">
-          <h3>Listing Bullets</h3>
+          <div className="flex items-center justify-between gap-3">
+            <h3>Listing Bullets</h3>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => onCopy('Listing bullets', drafts.listingBullets.join('\n'))}
+            >
+              <Copy size={16} aria-hidden="true" />
+              Copy
+            </button>
+          </div>
           <ul className="clean-list">
             {drafts.listingBullets.map((bullet) => (
               <li key={bullet}>{bullet}</li>
@@ -133,40 +151,64 @@ export function CopyPanel({
           <Sparkles size={18} aria-hidden="true" />
           <h3>Local LLM</h3>
         </div>
-        <input
-          className="field mt-3"
-          value={llmEndpoint}
-          onChange={(event) => onEndpointChange(event.target.value)}
-        />
-        <input
-          className="field mt-2"
-          value={llmModel}
-          onChange={(event) => onModelChange(event.target.value)}
-        />
         <button type="button" className="btn btn-secondary mt-3 w-full" onClick={onGenerate}>
           {llmStatus === 'loading' ? 'Generating...' : 'Polish Copy'}
         </button>
-        {llmDraft ? <p className="mt-3 whitespace-pre-wrap text-sm leading-6">{llmDraft}</p> : null}
+        {llmDraft ? (
+          <div className="mt-3 space-y-3">
+            <button
+              type="button"
+              className="btn btn-secondary w-full"
+              onClick={() => onCopy('Local LLM draft', llmDraft)}
+            >
+              <Copy size={16} aria-hidden="true" />
+              Copy draft
+            </button>
+            <p className="whitespace-pre-wrap text-sm leading-6">{llmDraft}</p>
+          </div>
+        ) : null}
       </div>
     </div>
   )
 }
 
-export function MessagePanel({ drafts }: { drafts: ReturnType<typeof generateDrafts> }) {
+export function MessagePanel({
+  drafts,
+  onCopy,
+}: {
+  drafts: ReturnType<typeof generateDrafts>
+  onCopy: (label: string, value: string) => void
+}) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {drafts.guestTemplates.map((template) => (
-        <TextBlock key={template.title} title={template.title} body={template.body} />
+        <TextBlock
+          key={template.title}
+          title={template.title}
+          body={template.body}
+          onCopy={() => onCopy(template.title, template.body)}
+        />
       ))}
     </div>
   )
 }
 
-export function ReviewPanel({ drafts }: { drafts: ReturnType<typeof generateDrafts> }) {
+export function ReviewPanel({
+  drafts,
+  onCopy,
+}: {
+  drafts: ReturnType<typeof generateDrafts>
+  onCopy: (label: string, value: string) => void
+}) {
   return (
     <div className="grid gap-3 md:grid-cols-3">
       {drafts.reviewResponses.map((response) => (
-        <TextBlock key={response.tone} title={response.tone} body={response.body} />
+        <TextBlock
+          key={response.tone}
+          title={response.tone}
+          body={response.body}
+          onCopy={() => onCopy(`${response.tone} review response`, response.body)}
+        />
       ))}
     </div>
   )
@@ -205,10 +247,22 @@ export function CompetitorPanel({
 
 export function ExportPanel({
   markdown,
-  onDownload,
+  onDownloadMarkdown,
+  onCopyMarkdown,
+  onDownloadWorkspace,
+  onDownloadCsv,
+  onDownloadJson,
+  onShare,
+  onPrint,
 }: {
   markdown: string
-  onDownload: () => void
+  onDownloadMarkdown: () => void
+  onCopyMarkdown: () => void
+  onDownloadWorkspace: () => void
+  onDownloadCsv: () => void
+  onDownloadJson: () => void
+  onShare: () => void
+  onPrint: () => void
 }) {
   return (
     <div className="grid gap-4 xl:grid-cols-[1fr_260px]">
@@ -220,9 +274,36 @@ export function ExportPanel({
       />
       <div className="content-panel">
         <h3>Pandoc-ready Markdown</h3>
-        <button type="button" className="btn btn-primary mt-3 w-full" onClick={onDownload}>
-          Download .md
-        </button>
+        <div className="mt-3 grid gap-2">
+          <button type="button" className="btn btn-primary w-full" onClick={onDownloadMarkdown}>
+            <Download size={16} aria-hidden="true" />
+            Download .md
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onCopyMarkdown}>
+            <Copy size={16} aria-hidden="true" />
+            Copy markdown
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onDownloadWorkspace}>
+            <Download size={16} aria-hidden="true" />
+            Save workspace
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onDownloadCsv}>
+            <Download size={16} aria-hidden="true" />
+            Export comps CSV
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onDownloadJson}>
+            <Download size={16} aria-hidden="true" />
+            Export comps JSON
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onShare}>
+            <Share2 size={16} aria-hidden="true" />
+            Copy share link
+          </button>
+          <button type="button" className="btn btn-secondary w-full" onClick={onPrint}>
+            <Printer size={16} aria-hidden="true" />
+            Print report
+          </button>
+        </div>
         <p className="mt-3 text-sm text-[#6a6255]">
           Convert locally with Pandoc when PDF, DOCX, or HTML output is needed.
         </p>
@@ -231,10 +312,82 @@ export function ExportPanel({
   )
 }
 
-function TextBlock({ title, body }: { title: string; body: string }) {
+export function SettingsPanel({
+  llmEndpoint,
+  llmModel,
+  includeActivityInExports,
+  debugVisible,
+  onEndpointChange,
+  onModelChange,
+  onIncludeActivityChange,
+  onDebugVisibleChange,
+  onReset,
+}: {
+  llmEndpoint: string
+  llmModel: string
+  includeActivityInExports: boolean
+  debugVisible: boolean
+  onEndpointChange: (value: string) => void
+  onModelChange: (value: string) => void
+  onIncludeActivityChange: (value: boolean) => void
+  onDebugVisibleChange: (value: boolean) => void
+  onReset: () => void
+}) {
+  return (
+    <div className="grid gap-4 xl:grid-cols-[1fr_280px]">
+      <div className="content-panel space-y-3">
+        <h3>Local LLM defaults</h3>
+        <input
+          className="field"
+          value={llmEndpoint}
+          onChange={(event) => onEndpointChange(event.target.value)}
+          aria-label="Local LLM endpoint"
+        />
+        <input
+          className="field"
+          value={llmModel}
+          onChange={(event) => onModelChange(event.target.value)}
+          aria-label="Local LLM model"
+        />
+      </div>
+      <div className="content-panel space-y-3">
+        <h3>Workspace behavior</h3>
+        <label className="toggle-row">
+          <input
+            type="checkbox"
+            checked={includeActivityInExports}
+            onChange={(event) => onIncludeActivityChange(event.target.checked)}
+          />
+          <span>Include activity history in exports</span>
+        </label>
+        <label className="toggle-row">
+          <input
+            type="checkbox"
+            checked={debugVisible}
+            onChange={(event) => onDebugVisibleChange(event.target.checked)}
+          />
+          <span>Always show import debug details</span>
+        </label>
+        <button type="button" className="btn btn-secondary w-full" onClick={onReset}>
+          Start fresh
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function TextBlock({ title, body, onCopy }: { title: string; body: string; onCopy?: () => void }) {
   return (
     <article className="content-panel">
-      <h3>{title}</h3>
+      <div className="flex items-center justify-between gap-3">
+        <h3>{title}</h3>
+        {onCopy ? (
+          <button type="button" className="btn btn-secondary" onClick={onCopy}>
+            <Copy size={16} aria-hidden="true" />
+            Copy
+          </button>
+        ) : null}
+      </div>
       <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-[#4f493e]">{body}</p>
     </article>
   )
