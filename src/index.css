@@ -206,6 +206,45 @@ select:focus-visible {
   font-size: 13px;
 }
 
+.issue-note {
+  display: grid;
+  gap: 4px;
+  border-left: 3px solid #6d7a75;
+  border-radius: 6px;
+  background: #f8fbfa;
+  padding: 9px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.issue-note[data-severity='warning'] {
+  border-left-color: #9a6416;
+}
+
+.issue-note[data-severity='recoverable-error'],
+.issue-note[data-severity='fatal-error'] {
+  border-left-color: #9b2c2c;
+}
+
+.issue-note span,
+.issue-note em {
+  color: #52625d;
+  font-style: normal;
+}
+
+.debug-box {
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid #cbd8d4;
+  border-radius: 8px;
+  background: #10201d;
+  padding: 10px;
+  color: #d9f3ec;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

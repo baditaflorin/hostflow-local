@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BarChart3,
   CalendarDays,
@@ -11,6 +11,7 @@ import {
   Upload,
 } from 'lucide-react'
 import { AppHeader } from './components/AppHeader'
+import { ImportInsight } from './components/ImportInsight'
 import { MetricTile } from './components/MetricTile'
 import { SubjectForm } from './components/SubjectForm'
 import { TabBar, type TabItem } from './components/TabBar'
@@ -35,10 +36,12 @@ import {
   type Listing,
   type SubjectListing,
 } from './features/import/listingSchema'
-import { parseListings } from './features/import/parseListings'
+import { inferImport } from './features/import/inferImport'
+import type { ImportResult, ImportStatus } from './features/import/importTypes'
 import { sampleListings } from './features/import/sampleListings'
 import { buildInfo } from './lib/build'
 import { compactNumber, currency } from './lib/format'
+import type { ActivityEvent } from './lib/activity'
 import { useLocalState } from './lib/storage'
 
 type WorkflowTab =
@@ -66,7 +69,10 @@ const storageKeys = {
   tab: 'hostflow-local:tab',
   llmEndpoint: 'hostflow-local:llm-endpoint',
   llmModel: 'hostflow-local:llm-model',
+  activity: 'hostflow-local:activity',
 }
+
+type ImportUiState = ImportStatus | 'idle' | 'parsing' | 'cancelled'
 
 function App() {
   const [listings, setListings] = useLocalState<Listing[]>(storageKeys.listings, sampleListings)
@@ -75,8 +81,12 @@ function App() {
     defaultSubjectListing,
   )
   const [activeTab, setActiveTab] = useLocalState<WorkflowTab>(storageKeys.tab, 'pricing')
+  const [activity, setActivity] = useLocalState<ActivityEvent[]>(storageKeys.activity, [])
   const [importText, setImportText] = useState('')
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [importState, setImportState] = useState<ImportUiState>('idle')
   const [notice, setNotice] = useState('Sample market loaded')
+  const importPreviewTimer = useRef<number | null>(null)
   const [duckDbRows, setDuckDbRows] = useState<DuckDbSummary[]>([])
   const [duckDbStatus, setDuckDbStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [llmEndpoint, setLlmEndpoint] = useLocalState(
@@ -86,6 +96,10 @@ function App() {
   const [llmModel, setLlmModel] = useLocalState(storageKeys.llmModel, 'llama3.2')
   const [llmDraft, setLlmDraft] = useState('')
   const [llmStatus, setLlmStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
+  const debugEnabled = useMemo(
+    () => new URLSearchParams(window.location.search).get('debug') === '1',
+    [],
+  )
 
   const pricing = useMemo(() => analyzePricing(listings, subject), [listings, subject])
   const calendar = useMemo(() => optimizeCalendar(pricing, subject, 30), [pricing, subject])
@@ -98,21 +112,57 @@ function App() {
     [calendar, competitors, pricing, subject],
   )
   const markdownReport = useMemo(
-    () => createMarkdownReport({ subject, listings, pricing, calendar, competitors, drafts }),
-    [calendar, competitors, drafts, listings, pricing, subject],
+    () =>
+      createMarkdownReport({
+        subject,
+        listings,
+        pricing,
+        calendar,
+        competitors,
+        drafts,
+        importResult,
+        activity,
+      }),
+    [activity, calendar, competitors, drafts, importResult, listings, pricing, subject],
+  )
+
+  useEffect(
+    () => () => {
+      if (importPreviewTimer.current) {
+        window.clearTimeout(importPreviewTimer.current)
+      }
+    },
+    [],
   )
 
   function importListings() {
-    const parsed = parseListings(importText)
-    if (!parsed.length) {
-      setNotice('No listings found. Try CSV with title, price, bedrooms, guests, rating headers.')
+    if (importState === 'parsing') return
+
+    const result = importResult ?? inferImport(importText)
+    setImportResult(result)
+    setImportState(result.status)
+    setNotice(result.summary)
+
+    if (result.marketRows.length && !result.listings.length) {
+      const firstMarket = result.marketRows[0]
+      setSubject({
+        ...subject,
+        currentRate: Math.round(firstMarket?.marketAdr || subject.currentRate),
+        targetOccupancy: firstMarket?.occupancyHint || subject.targetOccupancy,
+      })
+    }
+
+    if (!result.listings.length) {
+      addActivity('import', result.summary, result.sourceFingerprint)
       return
     }
-    setListings(parsed)
-    setNotice(`${parsed.length} imported listing${parsed.length === 1 ? '' : 's'} parsed locally`)
+
+    setListings(result.listings)
+    addActivity('import', result.summary, result.sourceFingerprint)
   }
 
   async function summarizeWithDuckDb() {
+    if (duckDbStatus === 'loading') return
     setDuckDbStatus('loading')
     try {
       const rows = await runDuckDbSummary(listings)
@@ -125,6 +175,7 @@ function App() {
   }
 
   async function generateWithLocalLlm() {
+    if (llmStatus === 'loading') return
     setLlmStatus('loading')
     try {
       const prompt = `Improve this short-term rental listing copy without inventing amenities:\n\n${drafts.listingSummary}\n\nBullets:\n${drafts.listingBullets.join('\n')}`
@@ -135,6 +186,30 @@ function App() {
       setLlmStatus('error')
       setNotice(error instanceof Error ? error.message : 'Local LLM request failed')
     }
+  }
+
+  function addActivity(type: ActivityEvent['type'], summary: string, sourceFingerprint?: string) {
+    setActivity((current) =>
+      [
+        {
+          id: `${Date.now()}-${type}`,
+          at: new Date().toISOString(),
+          type,
+          summary,
+          sourceFingerprint,
+        },
+        ...current,
+      ].slice(0, 12),
+    )
+  }
+
+  function downloadReport() {
+    addActivity(
+      'export',
+      `Exported report with ${listings.length} listings`,
+      importResult?.sourceFingerprint,
+    )
+    downloadMarkdown('hostflow-local-report.md', markdownReport)
   }
 
   return (
@@ -150,20 +225,48 @@ function App() {
             <textarea
               className="field mt-3 min-h-40"
               value={importText}
-              onChange={(event) => setImportText(event.target.value)}
+              onChange={(event) => {
+                const nextValue = event.target.value
+                setImportText(nextValue)
+                if (importPreviewTimer.current) {
+                  window.clearTimeout(importPreviewTimer.current)
+                }
+                if (!nextValue.trim()) {
+                  setImportResult(null)
+                  setImportState('idle')
+                  setNotice('Paste CSV or listing HTML to preview what HostFlow detected')
+                  importPreviewTimer.current = null
+                  return
+                }
+
+                setImportState('parsing')
+                importPreviewTimer.current = window.setTimeout(() => {
+                  const result = inferImport(nextValue)
+                  setImportResult(result)
+                  setImportState(result.status)
+                  setNotice(result.summary)
+                }, 180)
+              }}
               placeholder="CSV or pasted listing HTML"
               aria-label="CSV or pasted listing HTML"
             />
             <div className="mt-3 grid grid-cols-2 gap-2">
               <button type="button" className="btn btn-primary" onClick={importListings}>
-                Parse
+                {importState === 'parsing' ? 'Parsing...' : 'Parse'}
               </button>
               <button
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
+                  if (importPreviewTimer.current) {
+                    window.clearTimeout(importPreviewTimer.current)
+                    importPreviewTimer.current = null
+                  }
                   setListings(sampleListings)
+                  setImportResult(null)
+                  setImportState('idle')
                   setNotice('Sample market loaded')
+                  addActivity('sample', 'Loaded sample market')
                 }}
               >
                 Sample
@@ -173,6 +276,8 @@ function App() {
               {notice}
             </p>
           </section>
+
+          <ImportInsight result={importResult} activity={activity} debug={debugEnabled} />
 
           <section className="surface p-4">
             <div className="section-title">
@@ -239,10 +344,7 @@ function App() {
               {activeTab === 'reviews' ? <ReviewPanel drafts={drafts} /> : null}
               {activeTab === 'competitors' ? <CompetitorPanel competitors={competitors} /> : null}
               {activeTab === 'export' ? (
-                <ExportPanel
-                  markdown={markdownReport}
-                  onDownload={() => downloadMarkdown('hostflow-local-report.md', markdownReport)}
-                />
+                <ExportPanel markdown={markdownReport} onDownload={downloadReport} />
               ) : null}
             </div>
           </section>
