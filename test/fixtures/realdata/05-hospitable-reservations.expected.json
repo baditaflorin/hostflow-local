@@ -1,0 +1,17 @@
+{
+  "shape": "reservation_history",
+  "platform": "airbnb",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "title": "Luxury Starred Rock Villa",
+    "priceNightly": 242,
+    "priceTotal": 1450,
+    "currency": "EUR",
+    "guests": 6,
+    "minNights": 6,
+    "rating": 4
+  },
+  "mustWarnAbout": ["reservation_history_not_comp_set", "adr_derived_from_total_and_nights"],
+  "minimumConfidence": 0.68
+}

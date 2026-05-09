@@ -1,0 +1,16 @@
+{
+  "shape": "ota_cards",
+  "platform": "booking",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "priceNightly": 156,
+    "priceTotal": 312,
+    "currency": "EUR",
+    "guests": 2,
+    "bedrooms": 1,
+    "rating": 4.4
+  },
+  "mustWarnAbout": ["rating_scale_normalized", "total_price_divided_by_nights"],
+  "minimumConfidence": 0.72
+}

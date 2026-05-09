@@ -1,0 +1,16 @@
+{
+  "shape": "market_benchmark",
+  "platform": "pricelabs",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "title": "Downtown 2BR",
+    "location": "Bucharest, Romania",
+    "bedrooms": 2,
+    "priceNightly": 132,
+    "currency": "EUR",
+    "occupancyHint": 0.72
+  },
+  "mustWarnAbout": ["benchmark_summary_not_individual_listing"],
+  "minimumConfidence": 0.72
+}

@@ -1,0 +1,17 @@
+{
+  "shape": "competitor_listings",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "title": "Studio Lumineux",
+    "neighborhood": "Le Marais",
+    "priceNightly": 95.5,
+    "currency": "EUR",
+    "bedrooms": 1,
+    "guests": 2,
+    "rating": 4.87,
+    "reviewCount": 128
+  },
+  "mustWarnAbout": ["delimiter_inferred", "decimal_comma_normalized"],
+  "minimumConfidence": 0.72
+}

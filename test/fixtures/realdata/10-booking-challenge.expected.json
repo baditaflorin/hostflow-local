@@ -1,0 +1,14 @@
+{
+  "shape": "challenge_page",
+  "platform": "booking",
+  "useful": false,
+  "minListings": 0,
+  "mustInfer": {},
+  "mustWarnAbout": ["challenge_page_detected"],
+  "actionableMessageIncludes": [
+    "not a rendered listing page",
+    "copy the visible cards",
+    "CSV export"
+  ],
+  "minimumConfidence": 0.95
+}

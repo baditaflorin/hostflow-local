@@ -1,0 +1,13 @@
+{
+  "shape": "market_calendar",
+  "platform": "pricelabs",
+  "useful": true,
+  "minListings": 0,
+  "marketRows": 2,
+  "mustInfer": {
+    "marketAdr": 141,
+    "occupancyHint": 0.74
+  },
+  "mustWarnAbout": ["market_calendar_not_comp_set"],
+  "minimumConfidence": 0.7
+}

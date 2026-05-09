@@ -1,0 +1,14 @@
+{
+  "shape": "reservation_history",
+  "platform": "airbnb",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "priceNightly": 31,
+    "priceTotal": 156,
+    "guests": 2,
+    "location": "London"
+  },
+  "mustWarnAbout": ["pii_columns_detected", "adr_derived_from_total_and_dates"],
+  "minimumConfidence": 0.62
+}

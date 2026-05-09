@@ -1,0 +1,17 @@
+{
+  "shape": "ota_cards",
+  "platform": "airbnb",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "priceNightly": 91,
+    "priceTotal": 182,
+    "guests": 4,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "rating": 4.92,
+    "reviewCount": 143
+  },
+  "mustWarnAbout": ["total_and_nightly_price_present"],
+  "minimumConfidence": 0.8
+}

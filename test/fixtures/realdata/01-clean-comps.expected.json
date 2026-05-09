@@ -1,0 +1,13 @@
+{
+  "shape": "competitor_listings",
+  "useful": true,
+  "minListings": 2,
+  "mustInfer": {
+    "priceNightly": 120,
+    "guests": 4,
+    "rating": 4.8,
+    "currency": "USD"
+  },
+  "mustWarnAbout": ["currency_assumed"],
+  "minimumConfidence": 0.75
+}

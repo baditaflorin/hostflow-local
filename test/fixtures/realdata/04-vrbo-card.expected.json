@@ -1,0 +1,17 @@
+{
+  "shape": "ota_cards",
+  "platform": "vrbo",
+  "useful": true,
+  "minListings": 1,
+  "mustInfer": {
+    "priceNightly": 210,
+    "priceTotal": 1260,
+    "guests": 6,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "rating": 4.9,
+    "reviewCount": 64
+  },
+  "mustWarnAbout": ["total_and_nightly_price_present"],
+  "minimumConfidence": 0.82
+}

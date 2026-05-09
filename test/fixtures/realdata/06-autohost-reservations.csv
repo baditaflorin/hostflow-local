@@ -1,0 +1,2 @@
+status,source,confirmation_code,number_of_guests,total_price,check_in_date,check_out_date,listing_id,first_name,last_name,email,phone,location,birth_date
+CONFIRMED,Airbnb,abc1556,2,156,12-05-2025 11:00:00,12-10-2025 16:00:00,AWiWXnMn8a4,James,Bond,guest@example.test,+15550100000,London,
