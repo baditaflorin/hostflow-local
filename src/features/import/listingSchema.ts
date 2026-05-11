@@ -35,6 +35,10 @@ export const subjectListingSchema = z.object({
   cleaningFee: z.number().nonnegative(),
   targetOccupancy: z.number().min(0.3).max(0.95),
   standoutAmenities: z.array(z.string()),
+  // ISO YYYY-MM-DD dates the host already has on the books. Used by the
+  // calendar optimizer to detect real orphan gaps (single unbooked nights
+  // between two bookings) and to mark days as unavailable.
+  bookedDates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).default([]),
 })
 
 export type SubjectListing = z.infer<typeof subjectListingSchema>
@@ -49,4 +53,5 @@ export const defaultSubjectListing: SubjectListing = {
   cleaningFee: 45,
   targetOccupancy: 0.72,
   standoutAmenities: ['fast Wi-Fi', 'self check-in', 'workspace'],
+  bookedDates: [],
 }
